@@ -1,0 +1,2 @@
+# Graph-RAG-PDF-AI-Agent-Solve-hallucination-enhance-LLM-Knowledge-Graph-to-GenAI-Langchain-opensource
+GraphRAG, Outperforms traditional RAG ( Retrieval-Augmented Generation ) for Query Focused Summarization.  Opensource research of Knowledge Graph to improving the accuracy of data discovery, solving RAG pain points, solving Black-box hallucination,  and to enhance LLMs. Knowledge Graph to GenAI. PDF AI Agent/Chatbot with Python, Neo4j and LangChain
