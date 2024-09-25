@@ -1,0 +1,79 @@
+// Neo4j Database - Cypher Queries
+// Diabetes PDF Documents Data - GraphRAG Application
+
+
+// Creating Root Node Entities
+
+CREATE (d:Entity {label: 'Condition', name: 'Diabetes', embedding_text: 'diabetes'}),
+(o:Entity {label:'Condition', name: 'Obesity', embedding_text: 'obesity'}),
+(s:Entity {label:'Habit', name: 'Smoking', embedding_text: 'smoking'}),
+(pred:Entity {label:'Condition', name: 'Prediabetes', parent_entity: 'Diabetes', embedding_text: 'prediabetes'}),
+(t1d:Entity {label:'Condition', name: 'Type-1 Diabetes', parent_entity: 'Diabetes', embedding_text: 'type 1 diabetes'}),
+(t2d:Entity {label:'Condition', name: 'Type-2 Diabetes', parent_entity: 'Diabetes', embedding_text: 'type 2 diabetes'})
+
+
+// Create relations (edges)
+
+CREATE (o)-[:ASSOCIATED_WITH {type: 'Risk Factor'}]->(d),
+(s)-[:ASSOCIATED_WITH {type: 'Lifestyle Influence'}]->(d),
+(o)-[:CONTRIBUTES_TO {role: 'Increases Risk'}]->(t2d),
+(s)-[:INFLUENCES {role: 'Aggravates Condition'}]->(t2d),
+(pred)-[:TYPE_OF {type: 'early stage'}]->(d),
+(t1d)-[:TYPE_OF {type: 'stage 1'}]->(d),
+(t2d)-[:TYPE_OF {type: 'stage 2'}]->(d)
+
+
+// Connecting documents chunks with the fixed entities
+
+MATCH (e:Entity), (d:Document)
+WHERE e <> d
+WITH e, d, gds.similarity.cosine(e.embeddings, d.embeddings) AS cosineSimilarity
+WHERE cosineSimilarity > 0.5
+MERGE (e)-[r:RELATES_TO]->(d)
+ON CREATE SET r.cosineSimilarity = cosineSimilarity
+RETURN ID(e), e.name, ID(d), left(d.full_text, 50), r.cosineSimilarity
+ORDER BY cosineSimilarity DESC
+
+
+
+
+// Create Vector Indexes
+
+CREATE VECTOR INDEX vector_index_document IF NOT EXISTS
+FOR (d:Document)
+ON (d.embeddings)
+OPTIONS { indexConfig: {
+ `vector.dimensions`: 384,
+ `vector.similarity_function`: 'cosine'
+}}
+
+CREATE VECTOR INDEX vector_index_entity IF NOT EXISTS
+FOR (e:Entity)
+ON (e.embeddings)
+OPTIONS { indexConfig: {
+ `vector.dimensions`: 384,
+ `vector.similarity_function`: 'cosine'
+}}
+
+
+
+// Create Text Indexes
+
+CREATE FULLTEXT INDEX text_index_entity FOR (n:Entity) ON EACH [n.name]
+
+CREATE FULLTEXT INDEX text_index_document FOR (d:Document) ON EACH [d.full_text]
+
+
+// Show all indexes
+SHOW INDEX
+
+
+// Query vector index
+
+MATCH (e: Entity {name: 'Diabetes'})
+CALL db.index.vector.queryNodes('vector_index_entity', 5, e.embeddings)
+YIELD node AS vectorNode, score as vectorScore
+WITH vectorNode, vectorScore
+ORDER BY vectorScore DESC
+RETURN vectorNode.name AS label, vectorScore AS score
+
