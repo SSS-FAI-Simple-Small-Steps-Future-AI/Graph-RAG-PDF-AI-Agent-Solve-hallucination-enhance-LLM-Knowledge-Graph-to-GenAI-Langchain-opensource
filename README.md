@@ -13,8 +13,8 @@ Cost-effective solutions with opensource
 This computer science book is for programmers, researchers and developers who want to understand the machine learning techniques and advancement for Generative AI and Large Language Models (LLMs) specifically the recent GraphRAG.
 Whether you are a beginner looking to learn the latest practices for LLMs concisely or an experienced programmer looking to explore cutting-edge topics in data science, machine learning, and AI Models, you'll find this book useful.
 
-### Get Your Copy ( Amazon Paperback)
-https://www.amazon.com/dp/B0DJB2N5T3
+### Get Your Copy (Digital Download - PDF, EPUB):
+https://aicampusmagazines.gumroad.com/l/unvjx
 
 [![name](https://m.media-amazon.com/images/I/61oBwCThRzL._SL1233_.jpg)](https://www.amazon.com/dp/B0DJB2N5T3)
 
